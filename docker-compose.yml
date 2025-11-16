@@ -1,0 +1,33 @@
+# lotto_project/docker-compose.yml
+services:
+  # 1. 웹 애플리케이션 서비스 (Django)
+  web:
+    build: . # 현재 디렉토리의 Dockerfile을 사용하여 이미지 빌드
+    container_name: django_lotto_web
+    volumes:
+      - .:/usr/src/app # 로컬 파일 변경 시 컨테이너에 즉시 반영 (개발용)
+    ports:
+      - "5432:5432" # 로컬 포트 8000을 컨테이너 포트 8000과 연결
+    environment: # 환경 변수를 .env 파일에서 불러와 사용
+      - DJANGO_ALLOWED_HOSTS=*
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on: # DB 컨테이너가 먼저 시작되어야 함
+      - db
+
+  # 2. 데이터베이스 서비스 (PostgreSQL)
+  db:
+    image: postgres:15-alpine # 안정적이고 가벼운 PostgreSQL 공식 이미지
+    container_name: lotto_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # DB 데이터 영속성 유지를 위한 볼륨 마운트
+    environment:
+      # DB 설정 환경 변수 (.env 파일과 동일해야 함)
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+# 3. 데이터 볼륨 정의 (DB 데이터 저장소)
+volumes:
+  postgres_data:

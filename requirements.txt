@@ -1,0 +1,4 @@
+# lotto_project/requirements.txt
+Django==4.2.16
+psycopg2-binary # PostgreSQL DB 사용을 위한 어댑터
+gunicorn # 프로덕션용 웹 서버 (선택 사항이지만 권장)
